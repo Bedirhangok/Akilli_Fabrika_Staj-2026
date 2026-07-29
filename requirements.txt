@@ -1,0 +1,18 @@
+# bgok-patrol-vision-2026 — Python bağımlılıkları
+# Kurulum: pip install -r requirements.txt
+
+# ── Görüntü & AI ──
+ultralytics>=8.0.0          # YOLOv8/11
+opencv-python>=4.8.0        # OpenCV (webcam, video, görüntü işleme)
+numpy>=1.24.0
+
+# ── MQTT ──
+paho-mqtt>=1.6.1            # MQTT istemcisi
+
+# ── Metrik & değerlendirme ──
+# py-motmetrics                # İP11: MOTA/IDF1 için (gerekince aç)
+
+# ── Opsiyonel (Colab'da kurulur) ──
+# torch>=2.0.0               # YOLO fine-tune için
+# torchvision
+
