@@ -1,0 +1,30 @@
+# bgok-patrol-vision-2026 — Git Ignore
+
+# ── Geçici ve Log Dosyaları ──
+scratch/
+daily_log_template.md
+*.log
+*.jsonl
+
+# ── Python / IDE ──
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.vscode/
+.idea/
+
+# ── Görüntü & Modeller ──
+data/
+models/
+output/
+captured/
+*.pt
+*.onnx
+*.engine
+
+# ── Windows Sistem Dosyaları ──
+Thumbs.db
+Desktop.ini
