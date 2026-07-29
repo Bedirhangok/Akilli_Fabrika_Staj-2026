@@ -7,7 +7,7 @@
 
 ## Hafta 1 — 27–31 Temmuz 2026
 
-### 📅 30 Temmuz 2026 (Çarşamba)
+### 📅 27 Temmuz 2026 (Pazartesi)
 
 **Aktif İş Paketi:** İP1 — Ortak altyapı
 
