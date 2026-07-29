@@ -48,9 +48,9 @@
 
 | İş Paketi | Başladı | Bitti | Not |
 |:---:|:---:|:---:|-----|
-| İP1 | 30.07 | 30.07 | Mosquitto kurulunca test edilecek |
-| İP2 | 30.07 | 30.07 | Kayıt/Replay test edildi |
-| İP3 | 30.07 | 30.07 | YOLOv8 entegrasyonu hazır |
+| İP1 | 28.07 | 30.07 | Mosquitto kurulunca test edilecek |
+| İP2 | 28.07 | 30.07 | Kayıt/Replay test edildi |
+| İP3 | 29.07 | 30.07 | YOLOv8 entegrasyonu hazır |
 | İP4 | 30.07 | 30.07 | Sözleşme donduruldu |
 | İP5 | 30.07 | 30.07 | Literatür özeti eklendi |
 | İP6 | | | |
