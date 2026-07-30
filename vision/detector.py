@@ -18,7 +18,7 @@ from ultralytics import YOLO
 
 # ─── Ayarlar ───────────────────────────────────────────────
 DEFAULT_MODEL = "yolov8n.pt"  # Nano model (hızlı ve hafif)
-TEST_IMAGE_URL = "https://ultralytics.com/images/bus.jpg"  # Örnek test resmi
+TEST_IMAGE_URL = "https://media.roboflow.com/notebooks/examples/dog.jpeg"  # Örnek test resmi
 # ────────────────────────────────────────────────────────────
 
 
