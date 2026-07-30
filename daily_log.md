@@ -7,6 +7,16 @@
 
 ## Hafta 1 — 27–31 Temmuz 2026
 
+### 📅 31 Temmuz 2026 (Cuma)
+
+**Aktif İş Paketi:** İP5 — Mini literatür
+
+**Bugün yapılanlar:**
+- [x] Proje ile ilgili çeşitli makaleler ve akademik yayınlar incelendi.
+- [x] İncelenen makaleler literatür özeti dokümanına eklendi.
+
+---
+
 ### 📅 30 Temmuz 2026 (Perşembe)
 
 **Aktif İş Paketleri:** İP1, İP2, İP3, İP4, İP5
