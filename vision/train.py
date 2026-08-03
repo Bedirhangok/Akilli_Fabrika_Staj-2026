@@ -22,11 +22,11 @@ def install_and_import(package, import_name=None):
         import subprocess
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-# Gerekli paketlerin kurulu olduğundan emin ol (Colab'da kagglehub yüklü gelmeyebilir)
-install_and_import("kagglehub")
+# Colab'da gerekli paketleri yükleyelim
+install_and_import("huggingface_hub")
 install_and_import("ultralytics")
 
-import kagglehub
+from huggingface_hub import snapshot_download
 from ultralytics import YOLO
 
 def parse_args():
@@ -41,63 +41,20 @@ def main():
     args = parse_args()
     
     print("\n" + "="*50)
-    print("🚀 YOLOv8 PPE FINE-TUNE EĞİTİMİ BAŞLIYOR")
+    print("🚀 YOLOv8 PPE FINE-TUNE EĞİTİMİ BAŞLIYOR (HuggingFace Versiyonu)")
     print("="*50 + "\n")
     
-    # ── 1. Kaggle API Yetkilendirme Kontrolü ──
-    kaggle_json_path = os.path.expanduser("~/.kaggle/kaggle.json")
-    if not os.path.exists(kaggle_json_path):
-        # Olası konumları listele
-        possible_paths = [
-            "kaggle.json",
-            "../kaggle.json",
-            "/content/kaggle.json"
-        ]
-        
-        found_path = None
-        for p in possible_paths:
-            if os.path.exists(p):
-                found_path = p
-                break
-                
-        if found_path:
-            print(f"[BİLGİ] kaggle.json bulundu ({found_path}), sisteme kuruluyor...")
-            os.makedirs(os.path.dirname(kaggle_json_path), exist_ok=True)
-            import shutil
-            shutil.copy(found_path, kaggle_json_path)
-            os.chmod(kaggle_json_path, 0o600)
-            print("[BAŞARILI] Kaggle API yetkilendirmesi tamamlandı.")
-        else:
-            print("[HATA] Kaggle API anahtarı (kaggle.json) bulunamadı!")
-            print("Lütfen kaggle.json dosyasını Colab'ın solundaki dosya alanına sürükleyip bırakın.")
-            sys.exit(1)
-
-    # ── 2. Veri Setini İndirme (Fallback Mekanizması) ──
-    # sh17 silindiği için, güvenilir başka PPE dataset'lerini sırayla deniyoruz
-    dataset_candidates = [
-        "ahmedmurad1990/construction-site-safety-image-dataset-roboflow", 
-        "siddharthkumarsingha/ppe-detection-yolov8",                      
-        "keremates/yolov8-ppe-dataset",                                   
-        "yuvysharma/ppe-detection-yolov8",                                
-        "muhammetzahitcevik/ppe-dataset-yolov8"                           
-    ]
-    
-    dataset_path = None
-    for candidate in dataset_candidates:
-        try:
-            print(f"\n[BİLGİ] Veri seti deneniyor: {candidate}...")
-            dataset_path = kagglehub.dataset_download(candidate)
-            print(f"[BAŞARILI] Veri seti indirildi: {dataset_path}")
-            break
-        except Exception as e:
-            print(f"[UYARI] {candidate} indirilemedi (404/403 veya bulunamadı). Sonraki deneniyor...")
-            
-    if not dataset_path:
-        print("\n[HATA] Listedeki hiçbir PPE veri seti indirilemedi!")
-        print("Lütfen Kaggle'dan kendiniz bir veri seti seçip kodun içine ekleyin.")
+    # ── 1. Veri Setini HuggingFace'den İndirme (API KEY GEREKTİRMEZ!) ──
+    # Kaggle'ın sürekli verdiği 403 hatasını aşmak için halka açık bir HF dataseti kullanıyoruz.
+    print("[1/4] HuggingFace'den PPE Veri Seti indiriliyor (jhboyo/ppe-dataset)...")
+    try:
+        dataset_path = snapshot_download(repo_id="jhboyo/ppe-dataset", repo_type="dataset")
+        print(f"[BAŞARILI] Veri seti indirildi: {dataset_path}")
+    except Exception as e:
+        print(f"[HATA] HuggingFace'den veri seti indirilemedi: {e}")
         sys.exit(1)
         
-    # ── 3. Dinamik YAML Bulma ve Yolu Düzeltme ──
+    # ── 2. Dinamik YAML Bulma ve Yolu Düzeltme ──
     print("\n[2/4] dataset.yaml dosyası bulunuyor...")
     
     yaml_files = glob.glob(os.path.join(dataset_path, "**", "*.yaml"), recursive=True)
@@ -121,11 +78,11 @@ def main():
     
     print(f"[BAŞARILI] {yaml_filename} başarıyla oluşturuldu ve yollar güncellendi.")
     
-    # ── 4. YOLO modelini yükle ──
+    # ── 3. YOLO modelini yükle ──
     print(f"\n[3/4] Başlangıç modeli yükleniyor: {args.model}")
     model = YOLO(args.model)
     
-    # ── 5. Eğitimi Başlat ──
+    # ── 4. Eğitimi Başlat ──
     print(f"\n[4/4] Eğitim başlıyor! (Epochs: {args.epochs}, Batch: {args.batch}, Imgsz: {args.imgsz})")
     
     import torch
