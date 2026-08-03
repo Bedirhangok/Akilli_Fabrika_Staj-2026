@@ -1,6 +1,6 @@
 """
-train.py — SH17 Veri Seti ile YOLOv8 Fine-Tune Eğitimi (Colab Uyumlu)
-İP7: SH17 Fine-Tune
+train.py — PPE Veri Seti ile YOLOv8 Fine-Tune Eğitimi (Colab Uyumlu)
+İP7: SH17/PPE Fine-Tune
 
 Kullanım (Google Colab hücresinde):
     !python vision/train.py --epochs 20 --batch 16
@@ -10,6 +10,7 @@ import os
 import sys
 import argparse
 import yaml
+import glob
 
 def install_and_import(package, import_name=None):
     if import_name is None:
@@ -29,7 +30,7 @@ import kagglehub
 from ultralytics import YOLO
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="YOLOv8 SH17 Fine-Tune Eğitimi")
+    parser = argparse.ArgumentParser(description="YOLOv8 PPE Fine-Tune Eğitimi")
     parser.add_argument("--epochs", type=int, default=20, help="Eğitim devir (epoch) sayısı (Varsayılan: 20)")
     parser.add_argument("--batch", type=int, default=16, help="Batch size (Varsayılan: 16)")
     parser.add_argument("--imgsz", type=int, default=640, help="Görüntü boyutu (Varsayılan: 640)")
@@ -40,7 +41,7 @@ def main():
     args = parse_args()
     
     print("\n" + "="*50)
-    print("🚀 YOLOv8 SH17 FINE-TUNE EĞİTİMİ BAŞLIYOR")
+    print("🚀 YOLOv8 PPE FINE-TUNE EĞİTİMİ BAŞLIYOR")
     print("="*50 + "\n")
     
     # ── 1. Kaggle API Yetkilendirme Kontrolü ──
@@ -71,61 +72,62 @@ def main():
             print("Lütfen kaggle.json dosyasını Colab'ın solundaki dosya alanına sürükleyip bırakın.")
             sys.exit(1)
 
-    # ── 2. Veri Setini Kaggle'dan İndir ──
-    print("[1/4] Veri seti indiriliyor (mughees/sh17-dataset)...")
-    dataset_path = kagglehub.dataset_download("mughees/sh17-dataset")
-    print(f"[BİLGİ] Veri seti şuraya indirildi: {dataset_path}")
-    
-    # ── 2. Veri Seti Yapısını İncele ve Klasörleri Bul ──
-    # İndirilen klasörün altındaki yapıyı tarayalım. Genelde 'train' ve 'val' klasörleri bulunur.
-    train_dir = os.path.join(dataset_path, "train")
-    val_dir = os.path.join(dataset_path, "val")
-    
-    # Eğer doğrudan alt klasörler yoksa, altındaki klasörleri kontrol et
-    if not os.path.exists(train_dir):
-        # Klasör içeriğine bak
-        subdirs = [os.path.join(dataset_path, d) for d in os.listdir(dataset_path) if os.path.isdir(os.path.join(dataset_path, d))]
-        if len(subdirs) == 1:
-            # Tek bir ana klasör varsa onun içine gir
-            dataset_path = subdirs[0]
-            train_dir = os.path.join(dataset_path, "train")
-            val_dir = os.path.join(dataset_path, "val")
-            
-    print(f"[BİLGİ] Eğitim klasörü: {train_dir}")
-    print(f"[BİLGİ] Doğrulama klasörü: {val_dir}")
-    
-    # ── 3. Dinamik dataset.yaml Dosyası Oluştur ──
-    print("[2/4] dataset.yaml dosyası hazırlanıyor...")
-    
-    # SH17 Veri Setinin 17 Sınıfı (Resmi sınıf listesi)
-    classes = [
-        "person", "vest", "blue helmet", "red helmet", "yellow helmet", 
-        "white helmet", "no vest", "no helmet", "safety belt", "gloves", 
-        "boots", "goggles", "mask", "hearing protection", "kneepads", 
-        "hard hat", "other helmet"
+    # ── 2. Veri Setini İndirme (Fallback Mekanizması) ──
+    # sh17 silindiği için, güvenilir başka PPE dataset'lerini sırayla deniyoruz
+    dataset_candidates = [
+        "ahmedmurad1990/construction-site-safety-image-dataset-roboflow", 
+        "siddharthkumarsingha/ppe-detection-yolov8",                      
+        "keremates/yolov8-ppe-dataset",                                   
+        "yuvysharma/ppe-detection-yolov8",                                
+        "muhammetzahitcevik/ppe-dataset-yolov8"                           
     ]
     
-    yaml_data = {
-        "path": dataset_path,      # Ana veri seti yolu
-        "train": "train/images",   # Eğitim resimlerinin göreceli yolu
-        "val": "val/images",       # Doğrulama resimlerinin göreceli yolu
-        "names": {i: name for i, name in enumerate(classes)}
-    }
+    dataset_path = None
+    for candidate in dataset_candidates:
+        try:
+            print(f"\n[BİLGİ] Veri seti deneniyor: {candidate}...")
+            dataset_path = kagglehub.dataset_download(candidate)
+            print(f"[BAŞARILI] Veri seti indirildi: {dataset_path}")
+            break
+        except Exception as e:
+            print(f"[UYARI] {candidate} indirilemedi (404/403 veya bulunamadı). Sonraki deneniyor...")
+            
+    if not dataset_path:
+        print("\n[HATA] Listedeki hiçbir PPE veri seti indirilemedi!")
+        print("Lütfen Kaggle'dan kendiniz bir veri seti seçip kodun içine ekleyin.")
+        sys.exit(1)
+        
+    # ── 3. Dinamik YAML Bulma ve Yolu Düzeltme ──
+    print("\n[2/4] dataset.yaml dosyası bulunuyor...")
     
-    yaml_filename = "sh17_colab.yaml"
+    yaml_files = glob.glob(os.path.join(dataset_path, "**", "*.yaml"), recursive=True)
+    if not yaml_files:
+        print("[HATA] İndirilen veri setinde hiçbir .yaml dosyası bulunamadı!")
+        sys.exit(1)
+        
+    original_yaml = yaml_files[0]
+    print(f"[BİLGİ] {original_yaml} bulundu. Dosya yolları mutlak (absolute) hale getiriliyor...")
+    
+    # Yaml dosyasını oku ve train/val yollarını dataset_path ile birleştirerek kaydet
+    with open(original_yaml, "r", encoding="utf-8") as f:
+        yaml_data = yaml.safe_load(f)
+        
+    # YOLO için path'i zorunlu kıl
+    yaml_data["path"] = dataset_path
+    
+    yaml_filename = "ppe_colab.yaml"
     with open(yaml_filename, "w", encoding="utf-8") as f:
         yaml.dump(yaml_data, f, default_flow_style=False)
     
-    print(f"[BAŞARILI] {yaml_filename} başarıyla oluşturuldu.")
+    print(f"[BAŞARILI] {yaml_filename} başarıyla oluşturuldu ve yollar güncellendi.")
     
     # ── 4. YOLO modelini yükle ──
-    print(f"[3/4] Başlangıç modeli yükleniyor: {args.model}")
+    print(f"\n[3/4] Başlangıç modeli yükleniyor: {args.model}")
     model = YOLO(args.model)
     
     # ── 5. Eğitimi Başlat ──
-    print(f"[4/4] Eğitim başlıyor! (Epochs: {args.epochs}, Batch: {args.batch}, Imgsz: {args.imgsz})")
+    print(f"\n[4/4] Eğitim başlıyor! (Epochs: {args.epochs}, Batch: {args.batch}, Imgsz: {args.imgsz})")
     
-    # Colab'da GPU olup olmadığını doğrulamak için device=0 (varsa) veya cpu seçilir
     import torch
     device = 0 if torch.cuda.is_available() else "cpu"
     print(f"[BİLGİ] Kullanılan donanım: {device} ({'GPU Aktif' if device == 0 else 'CPU - Dikkat: Yavaş çalışabilir'})")
@@ -136,14 +138,14 @@ def main():
         batch=args.batch,
         imgsz=args.imgsz,
         device=device,
-        project="sh17_training",
-        name="yolov8_sh17_run",
+        project="ppe_training",
+        name="yolov8_ppe_run",
         exist_ok=True
     )
     
     print("\n" + "="*50)
     print("🎉 EĞİTİM BAŞARIYLA TAMAMLANDI!")
-    print(f"[BİLGİ] En iyi ağırlıklar şuraya kaydedildi: sh17_training/yolov8_sh17_run/weights/best.pt")
+    print(f"[BİLGİ] En iyi ağırlıklar şuraya kaydedildi: ppe_training/yolov8_ppe_run/weights/best.pt")
     print("="*50)
 
 if __name__ == "__main__":
