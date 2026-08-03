@@ -46,11 +46,24 @@ def main():
     # ── 1. Kaggle API Yetkilendirme Kontrolü ──
     kaggle_json_path = os.path.expanduser("~/.kaggle/kaggle.json")
     if not os.path.exists(kaggle_json_path):
-        if os.path.exists("kaggle.json"):
-            print("[BİLGİ] kaggle.json bulundu, sisteme kuruluyor...")
+        # Olası konumları listele
+        possible_paths = [
+            "kaggle.json",
+            "../kaggle.json",
+            "/content/kaggle.json"
+        ]
+        
+        found_path = None
+        for p in possible_paths:
+            if os.path.exists(p):
+                found_path = p
+                break
+                
+        if found_path:
+            print(f"[BİLGİ] kaggle.json bulundu ({found_path}), sisteme kuruluyor...")
             os.makedirs(os.path.dirname(kaggle_json_path), exist_ok=True)
             import shutil
-            shutil.copy("kaggle.json", kaggle_json_path)
+            shutil.copy(found_path, kaggle_json_path)
             os.chmod(kaggle_json_path, 0o600)
             print("[BAŞARILI] Kaggle API yetkilendirmesi tamamlandı.")
         else:
