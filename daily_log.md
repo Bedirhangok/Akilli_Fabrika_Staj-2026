@@ -5,6 +5,19 @@
 
 ---
 
+## Hafta 2 — 3–7 Ağustos 2026
+
+### 📅 3 Ağustos 2026 (Pazartesi)
+
+**Aktif İş Paketi:** İP6 — Canlı insan tespiti
+
+**Bugün yapılanlar:**
+- [x] `vision/live_detector.py` scripti geliştirildi.
+- [x] Canlı web kamerası üzerinde insan tespiti başarıyla test edildi.
+- [x] İşlem hızı ortalama **~30 FPS** ölçülerek bitti kriteri (≥10 FPS) fazlasıyla sağlandı.
+
+---
+
 ## Hafta 1 — 27–31 Temmuz 2026
 
 ### 📅 31 Temmuz 2026 (Cuma)
@@ -63,7 +76,7 @@
 | İP3 | 29.07 | 30.07 | YOLOv8 entegrasyonu hazır |
 | İP4 | 30.07 | 30.07 | Sözleşme donduruldu |
 | İP5 | 30.07 | 30.07 | Literatür özeti eklendi |
-| İP6 | | | |
+| İP6 | 03.08 | 03.08 | Canlı insan tespiti test edildi (~30 FPS) |
 | İP7 | | | |
 | İP8 | | | |
 | İP9 | | | |
