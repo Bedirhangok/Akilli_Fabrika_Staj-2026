@@ -43,7 +43,22 @@ def main():
     print("🚀 YOLOv8 SH17 FINE-TUNE EĞİTİMİ BAŞLIYOR")
     print("="*50 + "\n")
     
-    # ── 1. Veri Setini Kaggle'dan İndir ──
+    # ── 1. Kaggle API Yetkilendirme Kontrolü ──
+    kaggle_json_path = os.path.expanduser("~/.kaggle/kaggle.json")
+    if not os.path.exists(kaggle_json_path):
+        if os.path.exists("kaggle.json"):
+            print("[BİLGİ] kaggle.json bulundu, sisteme kuruluyor...")
+            os.makedirs(os.path.dirname(kaggle_json_path), exist_ok=True)
+            import shutil
+            shutil.copy("kaggle.json", kaggle_json_path)
+            os.chmod(kaggle_json_path, 0o600)
+            print("[BAŞARILI] Kaggle API yetkilendirmesi tamamlandı.")
+        else:
+            print("[HATA] Kaggle API anahtarı (kaggle.json) bulunamadı!")
+            print("Lütfen kaggle.json dosyasını Colab'ın solundaki dosya alanına sürükleyip bırakın.")
+            sys.exit(1)
+
+    # ── 2. Veri Setini Kaggle'dan İndir ──
     print("[1/4] Veri seti indiriliyor (mughees/sh17-dataset)...")
     dataset_path = kagglehub.dataset_download("mughees/sh17-dataset")
     print(f"[BİLGİ] Veri seti şuraya indirildi: {dataset_path}")
