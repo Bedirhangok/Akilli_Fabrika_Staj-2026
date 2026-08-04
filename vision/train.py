@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument("--batch", type=int, default=16, help="Batch size (Varsayılan: 16)")
     parser.add_argument("--imgsz", type=int, default=640, help="Görüntü boyutu (Varsayılan: 640)")
     parser.add_argument("--model", default="yolov8n.pt", help="Başlangıç modeli (yolov8n.pt, yolov8s.pt vb.)")
+    parser.add_argument("--project", default="ppe_training", help="Sonuçların kaydedileceği ana klasör")
     return parser.parse_args()
 
 def main():
@@ -95,14 +96,14 @@ def main():
         batch=args.batch,
         imgsz=args.imgsz,
         device=device,
-        project="ppe_training",
+        project=args.project,
         name="yolov8_ppe_run",
         exist_ok=True
     )
     
     print("\n" + "="*50)
     print("🎉 EĞİTİM BAŞARIYLA TAMAMLANDI!")
-    print(f"[BİLGİ] En iyi ağırlıklar şuraya kaydedildi: ppe_training/yolov8_ppe_run/weights/best.pt")
+    print(f"[BİLGİ] En iyi ağırlıklar şuraya kaydedildi: {args.project}/yolov8_ppe_run/weights/best.pt")
     print("="*50)
 
 if __name__ == "__main__":
