@@ -46,7 +46,7 @@ def main():
     print("="*50 + "\n")
     
     # ── 1. Veri Setini Kaggle'dan İndirme ──
-    print("[1/4] Kaggle'dan PPE Veri Seti indiriliyor (mughees/sh17-dataset)...")
+    print("[1/4] Kaggle'dan PPE Veri Seti indiriliyor (shlokraval/ppe-dataset-yolov8)...")
     
     is_kaggle_notebook = os.path.exists("/kaggle/input") or "KAGGLE_KERNEL_RUN_TYPE" in os.environ
     
@@ -66,7 +66,7 @@ def main():
         print("[BİLGİ] Kaggle Notebook ortamı algılandı. API key kontrolü atlanıyor.")
             
     try:
-        dataset_path = kagglehub.dataset_download("mughees/sh17-dataset")
+        dataset_path = kagglehub.dataset_download("shlokraval/ppe-dataset-yolov8")
         print(f"[BAŞARILI] Veri seti konumu: {dataset_path}")
     except Exception as e:
         print(f"[HATA] Kaggle'dan veri seti indirilemedi: {e}")
