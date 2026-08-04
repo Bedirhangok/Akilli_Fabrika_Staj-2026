@@ -48,21 +48,26 @@ def main():
     # ── 1. Veri Setini Kaggle'dan İndirme ──
     print("[1/4] Kaggle'dan PPE Veri Seti indiriliyor (mughees/sh17-dataset)...")
     
-    kaggle_json_path = os.path.expanduser("~/.kaggle/kaggle.json")
-    if not os.path.exists(kaggle_json_path):
-        if os.path.exists("/content/kaggle.json"):
-            os.makedirs(os.path.expanduser("~/.kaggle"), exist_ok=True)
-            import shutil
-            shutil.copy("/content/kaggle.json", kaggle_json_path)
-            os.chmod(kaggle_json_path, 0o600)
-            print("[BİLGİ] /content/kaggle.json yetkilendirildi.")
-        else:
-            print("[HATA] kaggle.json bulunamadı! Lütfen Colab'a yükleyin.")
-            sys.exit(1)
+    is_kaggle_notebook = os.path.exists("/kaggle/input") or "KAGGLE_KERNEL_RUN_TYPE" in os.environ
+    
+    if not is_kaggle_notebook:
+        kaggle_json_path = os.path.expanduser("~/.kaggle/kaggle.json")
+        if not os.path.exists(kaggle_json_path):
+            if os.path.exists("/content/kaggle.json"):
+                os.makedirs(os.path.expanduser("~/.kaggle"), exist_ok=True)
+                import shutil
+                shutil.copy("/content/kaggle.json", kaggle_json_path)
+                os.chmod(kaggle_json_path, 0o600)
+                print("[BİLGİ] /content/kaggle.json yetkilendirildi.")
+            else:
+                print("[HATA] kaggle.json bulunamadı! Lütfen Colab'a yükleyin.")
+                sys.exit(1)
+    else:
+        print("[BİLGİ] Kaggle Notebook ortamı algılandı. API key kontrolü atlanıyor.")
             
     try:
         dataset_path = kagglehub.dataset_download("mughees/sh17-dataset")
-        print(f"[BAŞARILI] Veri seti indirildi: {dataset_path}")
+        print(f"[BAŞARILI] Veri seti konumu: {dataset_path}")
     except Exception as e:
         print(f"[HATA] Kaggle'dan veri seti indirilemedi: {e}")
         sys.exit(1)
