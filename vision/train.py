@@ -23,10 +23,10 @@ def install_and_import(package, import_name=None):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 # Colab'da gerekli paketleri yükleyelim
-install_and_import("huggingface_hub")
+install_and_import("kagglehub")
 install_and_import("ultralytics")
 
-from huggingface_hub import snapshot_download
+import kagglehub
 from ultralytics import YOLO
 
 def parse_args():
@@ -42,17 +42,29 @@ def main():
     args = parse_args()
     
     print("\n" + "="*50)
-    print("🚀 YOLOv8 PPE FINE-TUNE EĞİTİMİ BAŞLIYOR (HuggingFace Versiyonu)")
+    print("🚀 YOLOv8 PPE FINE-TUNE EĞİTİMİ BAŞLIYOR (Kaggle - SH17)")
     print("="*50 + "\n")
     
-    # ── 1. Veri Setini HuggingFace'den İndirme (API KEY GEREKTİRMEZ!) ──
-    # Kaggle'ın sürekli verdiği 403 hatasını aşmak için halka açık bir HF dataseti kullanıyoruz.
-    print("[1/4] HuggingFace'den PPE Veri Seti indiriliyor (jhboyo/ppe-dataset)...")
+    # ── 1. Veri Setini Kaggle'dan İndirme ──
+    print("[1/4] Kaggle'dan PPE Veri Seti indiriliyor (mughees/sh17-dataset)...")
+    
+    kaggle_json_path = os.path.expanduser("~/.kaggle/kaggle.json")
+    if not os.path.exists(kaggle_json_path):
+        if os.path.exists("/content/kaggle.json"):
+            os.makedirs(os.path.expanduser("~/.kaggle"), exist_ok=True)
+            import shutil
+            shutil.copy("/content/kaggle.json", kaggle_json_path)
+            os.chmod(kaggle_json_path, 0o600)
+            print("[BİLGİ] /content/kaggle.json yetkilendirildi.")
+        else:
+            print("[HATA] kaggle.json bulunamadı! Lütfen Colab'a yükleyin.")
+            sys.exit(1)
+            
     try:
-        dataset_path = snapshot_download(repo_id="jhboyo/ppe-dataset", repo_type="dataset")
+        dataset_path = kagglehub.dataset_download("mughees/sh17-dataset")
         print(f"[BAŞARILI] Veri seti indirildi: {dataset_path}")
     except Exception as e:
-        print(f"[HATA] HuggingFace'den veri seti indirilemedi: {e}")
+        print(f"[HATA] Kaggle'dan veri seti indirilemedi: {e}")
         sys.exit(1)
         
     # ── 2. Dinamik YAML Bulma ve Yolu Düzeltme ──
