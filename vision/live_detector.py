@@ -81,8 +81,8 @@ def main():
                     break
                     
             # YOLO Çıkarımı
-            # Sadece performansı artırmak için `classes=[0]` parametresiyle YOLO'nun sadece insanları çıkarmasını sağlıyoruz.
-            results = model.predict(source=frame, conf=args.conf, classes=[PERSON_CLASS_ID], verbose=False)
+            # Eğittiğimiz yeni modelin tüm sınıflarını görebilmek için sınıf kısıtlaması (classes=...) yapmıyoruz.
+            results = model.predict(source=frame, conf=args.conf, verbose=False)
             
             # Algılanan nesneleri çerçeve içine al
             annotated_frame = frame.copy()
@@ -93,12 +93,14 @@ def main():
                     # Koordinatları al [x1, y1, x2, y2]
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
                     conf = float(box.conf[0])
+                    cls_id = int(box.cls[0])
+                    cls_name = model.names[cls_id] # Modelin içinden sınıfın gerçek ismini (Helmet, Vest vb.) al
                     
-                    # İnsan etrafına yeşil kutu çiz
+                    # Etrafına yeşil kutu çiz
                     cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                     
-                    # Etiket ekle
-                    label = f"Insan: {conf:.2f}"
+                    # Dinamik Sınıf Etiketi ekle
+                    label = f"{cls_name}: {conf:.2f}"
                     cv2.putText(annotated_frame, label, (x1, max(y1 - 10, 15)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                                 
