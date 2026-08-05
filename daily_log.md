@@ -7,6 +7,29 @@
 
 ## Hafta 2 — 3–7 Ağustos 2026
 
+### 📅 5 Ağustos 2026 (Çarşamba)
+
+**Aktif İş Paketleri:** İP7, İP8, İP9, İP10
+
+**Bugün yapılanlar:**
+- [x] Kaggle üzerinde `shlokraval/ppe-dataset-yolov8` veri seti ile YOLOv8 fine-tune eğitimi başarıyla tamamlandı (İP7).
+- [x] Eğitilen `best.pt` ağırlığı `live_detector.py`'ye entegre edildi ve sınıf isimleri (Baret, Yelek vb.) dinamik hale getirildi.
+- [x] YOLOv8'in yerleşik ByteTrack algoritması aktif edilerek Hedef Takibi (Tracker) sağlandı (İP8).
+- [x] En yüksek güven skoruna sahip nesne ana hedef seçilerek kameranın tam merkezinden hedefe olan (dx, dy) sapma miktarı piksel cinsinden hesaplandı (İP9).
+- [x] Hesaplanan dx, dy değerleri MQTT `vision/target_offset` kanalı üzerinden ~20 FPS (≥15 Hz hedefi aşılarak) başarıyla yayınlandı (İP10).
+
+---
+
+### 📅 4 Ağustos 2026 (Salı)
+
+**Aktif İş Paketi:** İP7 — SH17 fine-tune
+
+**Bugün yapılanlar:**
+- [x] Kaggle ortamında eğitim için `vision/train.py` dosyası API anahtarı istemeyecek şekilde (otomatik ortam algılamalı) güncellendi.
+- [x] SH17 veri seti Kaggle'dan kaldırıldığı için uygun alternatif olan `shlokraval/ppe-dataset-yolov8` belirlendi ve eğitime hazırlık yapıldı.
+
+---
+
 ### 📅 3 Ağustos 2026 (Pazartesi)
 
 **Aktif İş Paketi:** İP6 — Canlı insan tespiti
@@ -77,10 +100,10 @@
 | İP4 | 30.07 | 30.07 | Sözleşme donduruldu |
 | İP5 | 30.07 | 30.07 | Literatür özeti eklendi |
 | İP6 | 03.08 | 03.08 | Canlı insan tespiti test edildi (~30 FPS) |
-| İP7 | | | |
-| İP8 | | | |
-| İP9 | | | |
-| İP10 | | | |
+| İP7 | 04.08 | 05.08 | Kaggle (PPE-YOLOv8) ile eğitildi |
+| İP8 | 05.08 | 05.08 | ByteTrack ile entegre edildi |
+| İP9 | 05.08 | 05.08 | Ofset ve merkez hesaplandı |
+| İP10 | 05.08 | 05.08 | 20 FPS ile MQTT üzerinden yayınlandı |
 | İP11 | | | |
 | İP12 | | | |
 | İP13 | | | |
